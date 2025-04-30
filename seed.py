@@ -1,0 +1,26 @@
+from app import create_app, db
+from app.models.book import Book
+
+my_app = create_app()
+with my_app.app_context():
+    db.session.add(Book(title="1984", description="A dystopian novel about a totalitarian regime and constant surveillance."))
+    db.session.add(Book(title="To Kill a Mockingbird", description="A novel about racial injustice in the American South."))
+    db.session.add(Book(title="Harry Potter and the Sorcerer's Stone", description="A young wizard's journey begins at Hogwarts."))
+    db.session.add(Book(title="The Hobbit", description="A hobbit goes on a quest to reclaim a treasure guarded by a dragon."))
+    db.session.add(Book(title="The Great Gatsby", description="A mysterious millionaire and the American dream during the Jazz Age."))
+    db.session.add(Book(title="Pride and Prejudice", description="A romantic novel about manners, marriage, and morality."))
+    db.session.add(Book(title="Frankenstein", description="A scientist creates a living being, with tragic consequences."))
+    db.session.add(Book(title="The Adventures of Huckleberry Finn", description="A boy and a runaway slave travel the Mississippi River."))
+    db.session.add(Book(title="Anna Karenina", description="A tragic tale of love and infidelity in 19th-century Russia."))
+    db.session.add(Book(title="Moby-Dick", description="A whaling voyage becomes an obsession for revenge."))
+    db.session.add(Book(title="Fahrenheit 451", description="A society where books are banned and burned by firemen."))
+    db.session.add(Book(title="Brave New World", description="A futuristic society controlled by technology and conditioning."))
+    db.session.add(Book(title="Jane Eyre", description="A woman's emotional journey through hardship and independence."))
+    db.session.add(Book(title="Wuthering Heights", description="A haunting tale of love and revenge on the Yorkshire moors."))
+    db.session.add(Book(title="Slaughterhouse-Five", description="A WWII soldier becomes 'unstuck in time' in this anti-war novel."))
+    db.session.add(Book(title="One Hundred Years of Solitude", description="A magical realist story of a family's rise and fall."))
+    db.session.add(Book(title="The Hitchhiker's Guide to the Galaxy", description="A sci-fi comedy about a man traveling the galaxy after Earth's destruction."))
+    db.session.add(Book(title="The Picture of Dorian Gray", description="A man remains young while his portrait ages with his sins."))
+    db.session.add(Book(title="Mrs Dalloway", description="A day in the life of a woman preparing for a party in post-WWI England."))
+    db.session.add(Book(title="The Metamorphosis", description="A man wakes up as a giant insect and struggles with alienation."))
+    db.session.commit()
