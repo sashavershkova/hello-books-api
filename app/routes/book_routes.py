@@ -2,6 +2,7 @@
 from flask import Blueprint, abort, make_response, request, Response
 # internal
 from app.models.book import Book
+from .route_utilities import validate_model
 from ..db import db
 
 bp = Blueprint("bp", __name__, url_prefix="/books")
@@ -46,14 +47,14 @@ def get_all_books():
 # GET ONE BOOK
 @bp.get("/<book_id>")
 def get_one_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
 
     return book.to_dict()
 
 # UPDATE A BOOK
 @bp.put("/<book_id>")
 def update_one_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
     request_body = request.get_json()
 
     book.title = request_body["title"]
@@ -65,30 +66,12 @@ def update_one_book(book_id):
 # DELETE ONE BOOK
 @bp.delete("/<book_id>")
 def delete_one_book(book_id):
-    book = validate_book(book_id)
+    book = validate_model(Book, book_id)
 
     db.session.delete(book)
     db.session.commit()
 
     return Response(status=204, mimetype="application/json")
-
-
-# HELPER FUNCTION VALIDATING A BOOK
-def validate_book(book_id):
-    try:
-        book_id = int(book_id)
-    except:
-        response = {"message": f"Book {book_id} invalid"}
-        abort(make_response(response, 400))
-
-    query = db.select(Book).where(Book.id == book_id)
-    book = db.session.scalar(query)
-
-    if not book:
-        response = {"message": f"Book {book_id} not found"}
-        abort(make_response(response, 404))
-
-    return book
 
 
 
