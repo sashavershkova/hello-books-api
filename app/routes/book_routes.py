@@ -1,42 +1,30 @@
+# external
 from flask import Blueprint, abort, make_response, request, Response
+# internal
 from app.models.book import Book
 from ..db import db
 
-books_bp = Blueprint("books_bp", __name__, url_prefix="/books")
+bp = Blueprint("bp", __name__, url_prefix="/books")
 
-# POST ONE BOOK
-@books_bp.post("")
+# CREATE ONE BOOK
+@bp.post("")
 def create_book():
     request_body = request.get_json()
-    title = request_body["title"]
-    description = request_body["description"]
-    # checking the content of request_body itself is redundant 
-    # because constructor of a class do it, but checking a legitimate keys makes sense
-    if not title.strip() or not description.strip():
-        response = {"message": "Invalid request. Both title and description must be provided."}
+
+    try:
+        new_book = Book.from_dict(request_body)
+
+    except KeyError as error:
+        response = {"message": f"Invalid request: missing {error.args[0]}"}
         abort(make_response(response, 400))
 
-    # Check for duplicates
-    existing_book = Book.query.filter_by(title=title, description=description).first()
-    if existing_book:
-        response = {"message": "This book already exists in the database."}
-        abort(make_response(response, 400))
-
-
-    new_book = Book(title=title, description=description)
     db.session.add(new_book)
     db.session.commit()
 
-    response = {
-        "id": new_book.id,
-        "title": new_book.title,
-        "description": new_book.description,
-    }
-
-    return response, 201
+    return new_book.to_dict(), 201
 
 # GET ALL BOOKS
-@books_bp.get("")
+@bp.get("")
 def get_all_books():
     query = db.select(Book)
 
@@ -48,32 +36,22 @@ def get_all_books():
     if description_param:
         query = query.where(Book.description.ilike(f"%{description_param}%"))
 
-    query = query.order_by(Book.id)
-    books = db.session.scalars(query)
+    books = db.session.scalars(query.order_by(Book.id))
+    
     books_response = []
     for book in books:
-        books_response.append(
-            {
-                "id": book.id,
-                "title": book.title,
-                "description": book.description
-                }
-        )
+        books_response.append(book.to_dict())
     return books_response
 
 # GET ONE BOOK
-@books_bp.get("/<book_id>")
+@bp.get("/<book_id>")
 def get_one_book(book_id):
     book = validate_book(book_id)
 
-    return {
-        "id": book.id,
-        "title": book.title,
-        "description": book.description,
-    }
+    return book.to_dict()
 
 # UPDATE A BOOK
-@books_bp.put("/<book_id>")
+@bp.put("/<book_id>")
 def update_one_book(book_id):
     book = validate_book(book_id)
     request_body = request.get_json()
@@ -85,7 +63,7 @@ def update_one_book(book_id):
     return Response(status=204, mimetype="application/json")
 
 # DELETE ONE BOOK
-@books_bp.delete("/<book_id>")
+@bp.delete("/<book_id>")
 def delete_one_book(book_id):
     book = validate_book(book_id)
 
@@ -100,14 +78,14 @@ def validate_book(book_id):
     try:
         book_id = int(book_id)
     except:
-        response = {"message": f"book {book_id} invalid"}
+        response = {"message": f"Book {book_id} invalid"}
         abort(make_response(response, 400))
 
     query = db.select(Book).where(Book.id == book_id)
     book = db.session.scalar(query)
 
     if not book:
-        response = {"message": f"book {book_id} not found"}
+        response = {"message": f"Book {book_id} not found"}
         abort(make_response(response, 404))
 
     return book

@@ -1,9 +1,11 @@
+# external
 import pytest
-from app import create_app
-from app.db import db
 from flask.signals import request_finished
 from dotenv import load_dotenv
 import os
+# internal
+from app import create_app
+from app.db import db
 from app.models.book import Book
 
 load_dotenv()

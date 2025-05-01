@@ -1,4 +1,6 @@
+# external
 from sqlalchemy.orm import Mapped, mapped_column
+# internal
 from ..db import db
 
 class Book(db.Model):
@@ -6,17 +8,16 @@ class Book(db.Model):
     title: Mapped[str]
     description: Mapped[str]
 
+    @classmethod
+    def from_dict(cls, book_data):
+        new_book = Book(title=book_data["title"],
+                        description=book_data["description"])
+        return new_book
     
-# class Book:
-#     def __init__(self, id, title, description):
-#         self.id = id
-#         self.title = title
-#         self.description = description
+    def to_dict(self):
+        book_as_dict = {}
+        book_as_dict["id"] = self.id
+        book_as_dict["title"] = self.title
+        book_as_dict["description"] = self.description
 
-# books = [
-#     Book(1, "The Lord of the Rings", "An epic fantasy saga by J.R.R. Tolkien about the struggle to destroy a powerful ring."),
-#     Book(2, "The Wheel of Time", "A long-running fantasy series by Robert Jordan that follows the battle between light and shadow."),
-#     Book(3, "A Game of Thrones", "The first book in George R.R. Martin's series about noble families vying for control of a kingdom."),
-#     Book(4, "The Name of the Wind", "A lyrical fantasy novel by Patrick Rothfuss about a gifted young man who grows into a legendary figure."),
-#     Book(5, "Mistborn: The Final Empire", "A high fantasy heist story by Brandon Sanderson set in a world of ash and oppression.")
-# ]
+        return book_as_dict
