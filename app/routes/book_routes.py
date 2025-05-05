@@ -5,7 +5,7 @@ from app.models.book import Book
 from .route_utilities import validate_model
 from ..db import db
 
-bp = Blueprint("bp", __name__, url_prefix="/books")
+bp = Blueprint("bp_book", __name__, url_prefix="/books")
 
 # CREATE ONE BOOK
 @bp.post("")

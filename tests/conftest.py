@@ -7,6 +7,8 @@ import os
 from app import create_app
 from app.db import db
 from app.models.book import Book
+from app.models.author import Author
+
 
 load_dotenv()
 
@@ -41,6 +43,18 @@ def two_saved_books(app):
     mountain_book = Book(title="Mountain Book", description="i luv 2 climb rocks")
 
     db.session.add_all([ocean_book, mountain_book])
+    # Alternatively, we could do
+    # db.session.add(ocean_book)
+    # db.session.add(mountain_book)
+    db.session.commit()
+
+@pytest.fixture
+def two_saved_authors(app):
+    # Arrange
+    author1 = Author(name="J.R.R. Tolkien")
+    author2 = Author(name="Leo Tolstoy")
+
+    db.session.add_all([author1, author2])
     # Alternatively, we could do
     # db.session.add(ocean_book)
     # db.session.add(mountain_book)
