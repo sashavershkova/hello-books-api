@@ -2,7 +2,8 @@
 from flask import Blueprint, abort, make_response, request, Response
 # internal
 from app.models.book import Book
-from .route_utilities import validate_model
+from app.models.author import Author
+from .route_utilities import validate_model, create_model
 from ..db import db
 
 bp = Blueprint("bp_book", __name__, url_prefix="/books")
@@ -11,18 +12,7 @@ bp = Blueprint("bp_book", __name__, url_prefix="/books")
 @bp.post("")
 def create_book():
     request_body = request.get_json()
-
-    try:
-        new_book = Book.from_dict(request_body)
-
-    except KeyError as error:
-        response = {"message": f"Invalid request: missing {error.args[0]}"}
-        abort(make_response(response, 400))
-
-    db.session.add(new_book)
-    db.session.commit()
-
-    return new_book.to_dict(), 201
+    return create_model(Book, request_body)
 
 # GET ALL BOOKS
 @bp.get("")
@@ -59,8 +49,12 @@ def update_one_book(book_id):
 
     book.title = request_body["title"]
     book.description = request_body["description"]
-    db.session.commit()
 
+    if "author_id" in request_body:
+        author = validate_model(Author, request_body["author_id"])
+        book.author = author
+
+    db.session.commit()
     return Response(status=204, mimetype="application/json")
 
 # DELETE ONE BOOK
