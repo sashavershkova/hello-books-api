@@ -1,5 +1,5 @@
 from werkzeug.exceptions import HTTPException
-from app.routes.route_utilities import validate_model, create_model
+from app.routes.route_utilities import validate_model, create_model, get_models_with_filters
 from app.models.book import Book
 from app.models.author import Author
 
@@ -39,8 +39,8 @@ def test_create_model_book(client):
     result = create_model(Book, test_data)
 
     # Assert
-    assert status_code == 201
-    assert result.get_json() == {
+    assert result[1] == 201
+    assert result[0] == {
         "id": 1,
         "title": "New Book",
         "description": "The Best!"
@@ -71,8 +71,19 @@ def test_create_model_author(client):
     result = create_model(Author, test_data)
 
     # Assert
-    assert result.status_code == 201
-    assert result.get_json() == {
+    assert result[1] == 201
+    assert result[0] == {
         "id": 1,
         "name": "New Author"
     }
+
+def test_get_models_with_filters_one_matching_book(two_saved_books):
+    # Act
+    result = get_models_with_filters(Book, {"title": "ocean"})
+
+    # Assert
+    assert result == [{
+        "id": 1,
+        "title": "Ocean Book",
+        "description": "watr 4evr"
+    }]
