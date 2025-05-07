@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask
 from .db import db, migrate
 from .models import book
@@ -5,11 +8,14 @@ from .routes.book_routes import bp as books_bp
 from .routes.author_routes import bp as authors_bp
 import os
 
+
+
 def create_app(config=None):
     app = Flask(__name__)
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    # print("DATABASE URI:", os.getenv("SQLALCHEMY_DATABASE_URI"))
 
     if config:
         # Merge `config` into the app's configuration

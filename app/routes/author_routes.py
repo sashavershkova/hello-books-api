@@ -31,9 +31,9 @@ def create_book_with_author(author_id):
     author = validate_model(Author, author_id)
 
     book_data = request.get_json()
-    book_data["author_id"] = author.id
+    book_data["author_id"] = author.id # revise that, add GET method
 
-    return make_response(create_model(Author, book_data), 200)
+    return make_response(create_model(Author, book_data), 201)
 
 # GET ALL BOOKS FROM AUTHOR
 @bp.get("<author_id>/books")
