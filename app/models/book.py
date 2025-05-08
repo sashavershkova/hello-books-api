@@ -18,16 +18,19 @@ class Book(db.Model):
     genres: Mapped[list["Genre"]] = relationship(secondary="book_genre", back_populates="books") 
 
 
-    def to_dict(self):
-        book_as_dict = {}
-        book_as_dict["id"] = self.id
-        book_as_dict["title"] = self.title
-        book_as_dict["description"] = self.description
+def to_dict(self):
+    book_as_dict = {}
+    book_as_dict["id"] = self.id
+    book_as_dict["title"] = self.title
+    book_as_dict["description"] = self.description
 
-        if self.author:
-            book_as_dict["author"] = self.author.name
+    if self.author:
+        book_as_dict["author"] = self.author.name
 
-        return book_as_dict
+    if self.genres:
+        book_as_dict["genres"] = [genre.name for genre in self.genres]
+
+    return book_as_dict
     
     
     @classmethod
@@ -37,7 +40,8 @@ class Book(db.Model):
         new_book = cls(
             title=book_data["title"],
             description=book_data["description"],
-            author_id=author_id
+            author_id=author_id,
+            genres=genres
         )
 
         return new_book
